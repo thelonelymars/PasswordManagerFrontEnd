@@ -1,0 +1,56 @@
+<div class="min-h-screen bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 flex items-center justify-center">
+  <div class="bg-white shadow-2xl rounded-lg w-96 p-6">
+    <!-- Header Section -->
+    <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400 text-center mb-6">
+      🌈 To-Do List
+    </h1>
+
+    <!-- Input Field Section -->
+    <div class="mb-6">
+      <label for="todoInput" class="text-gray-700 font-medium block mb-2">
+        🎯 Add a Task:
+      </label>
+      <input
+        id="todoInput"
+        [(ngModel)]="toDoList"
+        placeholder="Enter your task..."
+        class="border-2 border-pink-400 w-60 rounded-md py-2 px-3 focus:ring focus:ring-pink-200 focus:outline-none"
+      />
+      <div class="flex mt-4 space-x-3">
+        <button
+          (click)="addItem(toDoList)"
+          class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 focus:ring focus:ring-blue-300 focus:outline-none active:shadow-lg transition duration-300"
+        >
+          Add
+        </button>
+        <button
+          (click)="saveItem()"
+          class="bg-green-500 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 focus:ring focus:ring-green-300 focus:outline-none active:shadow-lg transition duration-300"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+
+    <!-- Display User's To-Do List -->
+    <div *ngIf="items.length > 0">
+      <h2 class="text-lg font-semibold text-teal-600 mb-3">
+        📄 Your To-Do:
+      </h2>
+      <div *ngFor="let item of items" class="p-3 bg-green-100 text-green-800 rounded-lg flex justify-between items-center mb-3 shadow-md">
+        <p class="font-bold">{{ item.toDoListName }}</p>
+        <div class="flex space-x-2">
+          <button class="text-red-500 hover:text-red-700" (click)="deleteItem(item.id)">
+            <mat-icon aria-hidden="false" aria-label="Delete" fontIcon="delete"></mat-icon>
+          </button>
+          <button class="text-blue-500 hover:text-blue-700" >
+            <mat-icon aria-hidden="false" aria-label="Edit" fontIcon="edit"></mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="items.length === 0" class="text-center text-gray-500">
+      No tasks yet. Add one to start!
+    </div>
+  </div>
+</div>
