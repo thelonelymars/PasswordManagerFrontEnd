@@ -8,13 +8,17 @@ import {response} from 'express';
 import { TodoService } from './todo.service';
 import { MessageBoxComponent } from '../Fragments/message-box/message-box.component';
 import { MatDialog } from '@angular/material/dialog';
+import { error } from 'node:console';
 
-
+interface $oid{
+  oid:string
+}
 interface ToDoItem {
   toDoListName: string;
   status: string;
-  id: number;
+  _id:$oid
 }
+
 @Component({
   selector: 'app-root',
   imports: [ FormsModule, NgIf, NgForOf, MatSlideToggleModule, MatIcon],
@@ -22,6 +26,7 @@ interface ToDoItem {
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+ editingItemId: string | null = null;
 saveItem() {
   this.toDoService.SaveItem().then(response => {
     this.openMessageBox("Success", response);
@@ -32,17 +37,45 @@ saveItem() {
 }
   constructor(private toDoService:TodoService,private dialog:MatDialog){}
   toDoList = 'ToDoList';
-  items:ToDoItem[] = [];
+  items:TodoListItem[] = [];
   ngOnInit() {
-    this.items=this.toDoService.items;
+     this.toDoService.GetLists()
+  this.toDoService.GetLists().then((data:TodoListItem[])=>{
+      this.items=data
+      debugger
+    }).catch(error =>{
+      console.log("Error")
+    })
+
   }
-  addItem(item:string){
-    this.toDoService.addItem(item);
-    this.items=this.toDoService.getItems();
+  async addItem(item:string){
+    try{
+      await this.toDoService.addItem(item);
+      const data=await this.toDoService.GetLists();
+      this.items=data
+    } catch(error){
+      console.error("error:",error)
+    }
   }
-  deleteItem(id:number) {
-   this.toDoService.deleteItem(id);
-   this.items=this.toDoService.getItems();
+  async deleteItem(id: string) {
+  try {
+    await this.toDoService.deleteItem(id);
+    const data = await this.toDoService.GetLists();
+    this.items = data;
+  } catch (error) {
+    console.error('Delete failed:', error);
+    // Consider showing user feedback
+  }
+}
+ onEdit(itemId: string) {
+    this.editingItemId = itemId;
+  }
+
+  async finishEditing(itemId: string,NewTaskName:string) {
+    await this.toDoService.editItem(itemId,NewTaskName)
+    const data=await this.toDoService.GetLists()
+    this.items=data
+    this.editingItemId = null;
   }
 openMessageBox(title:string,message:string){ {
 this.dialog.open(MessageBoxComponent, {
@@ -52,3 +85,16 @@ this.dialog.open(MessageBoxComponent, {
   
   
 }
+
+
+export interface TodoListItem {
+  _id: Id
+  name: string
+  status: string
+  id: number
+}
+
+export interface Id {
+  $oid: string
+}
+

@@ -38,13 +38,15 @@
         📄 Your To-Do:
       </h2>
       <div *ngFor="let item of items" class="p-3 bg-green-100 text-green-800 rounded-lg flex justify-between items-center mb-3 shadow-md">
-        <p class="font-bold">{{ item.toDoListName }}</p>
+        <p class="font-bold" *ngIf="editingItemId !==item._id.$oid">{{ item.name}}</p>
+        <input type="text" [(ngModel)]="item.name"  *ngIf="editingItemId ===item._id.$oid" (blur)="finishEditing(item._id.$oid,item.name)">
+         <p class="font-bold">{{ item.status}}</p>
         <div class="flex space-x-2">
-          <button class="text-red-500 hover:text-red-700" (click)="deleteItem(item.id)">
+          <button class="text-red-500 hover:text-red-700" (click)="deleteItem(item._id.$oid)">
             <mat-icon aria-hidden="false" aria-label="Delete" fontIcon="delete"></mat-icon>
           </button>
-          <button class="text-blue-500 hover:text-blue-700" >
-            <mat-icon aria-hidden="false" aria-label="Edit" fontIcon="edit"></mat-icon>
+          <button class="text-blue-500 hover:text-blue-700" (click)="onEdit(item._id.$oid)" >
+            <mat-icon aria-hidden="false" aria-label="Edit"  fontIcon="edit"></mat-icon>
           </button>
         </div>
       </div>
